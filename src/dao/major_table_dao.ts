@@ -2,13 +2,17 @@ import * as AWS from 'aws-sdk';
 
 const db_client = new AWS.DynamoDB.DocumentClient();
 
-export const MAJOR_TABLE_NAME = process.env.MAJOR_TABLE_NAME || '';
-export const MAJOR_TABLE_PARTITION_KEY = process.env.MAJOR_TABLE_PARTITION_KEY || '';
-export const MAJOR_TABLE_SORT_KEY = process.env.MAJOR_TABLE_SORT_KEY || '';
+const MAJOR_TABLE_NAME = process.env.MAJOR_TABLE_NAME || '';
+const MAJOR_TABLE_PARTITION_KEY = process.env.MAJOR_TABLE_PARTITION_KEY || '';
+const MAJOR_TABLE_SORT_KEY = process.env.MAJOR_TABLE_SORT_KEY || '';
 
 const REVIEWS = 'reviews' // a list of review IDs
 
-export async function get_reviews(school: string, major: string) {
+/**
+ *
+ * return {"school":"hit","major":"welding","reviews":["f52ce81f-f66f-4307-a2aa-fe3da3c09af0"]}
+ */
+export async function getReviewIds(school: string, major: string) {
     const response = await db_client.get({
         Key: key(school, major),
         TableName: MAJOR_TABLE_NAME,
@@ -17,7 +21,7 @@ export async function get_reviews(school: string, major: string) {
     return response['Item'];
 }
 
-export async function add_review(school: string, major: string, reviewId: string) {
+export async function appendReview(school: string, major: string, reviewId: string) {
     return await db_client.update({
         TableName: MAJOR_TABLE_NAME,
         Key: key(school, major),

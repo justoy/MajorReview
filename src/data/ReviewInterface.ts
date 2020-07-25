@@ -5,3 +5,8 @@ export interface ReviewInterface {
     courses: string, // 课程情况
     major: string, // 专业情况
 }
+
+export interface ReviewItem extends ReviewInterface{
+    id: string,
+    ts: number, // timestamp
+}
