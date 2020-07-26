@@ -15,8 +15,9 @@ export class MajorReviewStack extends cdk.Stack {
             restApiName: 'MajorReview Service',
             defaultCorsPreflightOptions: {
                 allowOrigins: apigateway.Cors.ALL_ORIGINS,
-                allowMethods: ['GET', 'POST', 'OPTION']
-            },
+                allowMethods: apigateway.Cors.ALL_METHODS,
+                allowHeaders: ['*'],
+            }
         });
 
         const review = api.root.addResource('review');
