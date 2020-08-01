@@ -1,6 +1,5 @@
-import {getReviewIds} from "./dao/major_table_dao";
-import {getReviews} from "./dao/review_table_dao";
 import {add_header} from "./common";
+import {getReviewIds, getReviews} from "./dao/reviews_writer_reader";
 
 export const handler = async (event: any = {}): Promise<any> => {
     console.log(`event is ${JSON.stringify(event)}`);
