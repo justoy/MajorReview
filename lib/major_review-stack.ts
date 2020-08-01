@@ -1,41 +1,23 @@
 import * as cdk from '@aws-cdk/core';
-import * as apigateway from '@aws-cdk/aws-apigateway'
 import {constructMajorResources} from "./backend_resources";
+import {construct_s3} from "./s3_resources";
+import {EnvInterface, PROD} from "./env";
+import {construct_apigateway} from "./apigateway_resources";
 
 
 export class MajorReviewStack extends cdk.Stack {
-    constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+    constructor(scope: cdk.Construct, id: string, env: EnvInterface, props?: cdk.StackProps) {
         super(scope, id, props);
 
         // ddb and lambda
         const [addReview, getReviews] = constructMajorResources(this);
 
+        // s3
+        if (env === PROD) {
+            construct_s3(this);
+        }
+
         // API gateway
-        const api = new apigateway.RestApi(this, 'majorReviewApi', {
-            restApiName: 'MajorReview Service',
-            defaultCorsPreflightOptions: {
-                allowOrigins: apigateway.Cors.ALL_ORIGINS,
-                allowMethods: apigateway.Cors.ALL_METHODS,
-                allowHeaders: ['*'],
-            }
-        });
-
-        const review = api.root.addResource('review');
-
-        const addReviewIntegration = new apigateway.LambdaIntegration(addReview);
-        const post_method = review.addMethod('POST', addReviewIntegration, {
-            requestParameters: {
-                'method.request.querystring.school': true,
-                'method.request.querystring.major': true,
-            }
-        });
-
-        const getReviewsIntegration = new apigateway.LambdaIntegration(getReviews);
-        const get_method = review.addMethod('GET', getReviewsIntegration, {
-            requestParameters: {
-                'method.request.querystring.school': true,
-                'method.request.querystring.major': true,
-            }
-        });
+        construct_apigateway(this, addReview, getReviews, env)
     }
 }

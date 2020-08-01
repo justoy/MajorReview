@@ -4,6 +4,13 @@ This is a blank project for TypeScript development with CDK.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
+### To Deploy Beta:
+export DEPLOY_STAGE=beta && npm run build && cdk synth && cdk deploy
+
+### To Deploy Prod:
+export DEPLOY_STAGE=prod && npm run build && cdk synth && cdk deploy
+
+
 ## Useful commands
 
  * `npm run build`   compile typescript to js

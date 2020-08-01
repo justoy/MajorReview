@@ -14,7 +14,7 @@ const REVIEW_TABLE_PRIMARY_KEY = "id";
 
 export function constructMajorResources(app: cdk.Stack): [lambda.Function, lambda.Function] {
     // DDB
-    const majorTableName = MAJOR_TABLE_NAME
+    const majorTableName = app.stackName + '-' + MAJOR_TABLE_NAME
     const majorTable = new dynamodb.Table(app, majorTableName, {
         partitionKey: {
             name: MAJOR_TABLE_PARTITION_KEY,
@@ -29,7 +29,7 @@ export function constructMajorResources(app: cdk.Stack): [lambda.Function, lambd
         removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
-    const reviewTableName = REVIEW_TABLE_NAME
+    const reviewTableName = app.stackName + '-' + REVIEW_TABLE_NAME
     const reviewTable = new dynamodb.Table(app, reviewTableName, {
         partitionKey: {
             name: REVIEW_TABLE_PRIMARY_KEY,
@@ -42,19 +42,21 @@ export function constructMajorResources(app: cdk.Stack): [lambda.Function, lambd
 
     // Lambda
     const addReview = new lambda.Function(app, 'AddReviewFunction', {
+        functionName: `${app.stackName}-addReview`,
         code: new lambda.AssetCode('src'),
         handler: 'add_review.handler',
         runtime: lambda.Runtime.NODEJS_12_X,
         timeout: Duration.seconds(10),
-        environment: lambdaEnv(),
+        environment: lambdaEnv(majorTableName, reviewTableName),
     });
 
     const getReviews = new lambda.Function(app, 'GetReviewsFunction', {
+        functionName: `${app.stackName}-getReviews`,
         code: new lambda.AssetCode('src'),
         handler: 'get_reviews.handler',
         runtime: lambda.Runtime.NODEJS_12_X,
         timeout: Duration.seconds(10),
-        environment: lambdaEnv(),
+        environment: lambdaEnv(majorTableName, reviewTableName),
     });
 
     majorTable.grantWriteData(addReview);
@@ -65,12 +67,12 @@ export function constructMajorResources(app: cdk.Stack): [lambda.Function, lambd
     return [addReview, getReviews]
 }
 
-function lambdaEnv() {
+function lambdaEnv(majorTableName: string, reviewTableName: string) {
     return {
-        MAJOR_TABLE_NAME: MAJOR_TABLE_NAME,
+        MAJOR_TABLE_NAME: majorTableName,
         MAJOR_TABLE_PARTITION_KEY: MAJOR_TABLE_PARTITION_KEY,
         MAJOR_TABLE_SORT_KEY: MAJOR_TABLE_SORT_KEY,
-        REVIEW_TABLE_NAME: REVIEW_TABLE_NAME,
+        REVIEW_TABLE_NAME: reviewTableName,
         REVIEW_TABLE_PRIMARY_KEY: REVIEW_TABLE_PRIMARY_KEY,
     }
 }
