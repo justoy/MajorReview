@@ -75,7 +75,7 @@ export async function getReviewIds(school: string, major: string) {
 
 function key(school: string, major: string) {
     return {
-        [MAJOR_TABLE_PARTITION_KEY]: school,
-        [MAJOR_TABLE_SORT_KEY]: major,
+        [MAJOR_TABLE_PARTITION_KEY]: major,
+        [MAJOR_TABLE_SORT_KEY]: school,
     }
 }

@@ -4,9 +4,9 @@ import * as lambda from "@aws-cdk/aws-lambda";
 import {Duration} from "@aws-cdk/core";
 
 // Major table
-const MAJOR_TABLE_NAME = "major_table";
-const MAJOR_TABLE_PARTITION_KEY = "school";
-const MAJOR_TABLE_SORT_KEY = "major";
+const MAJOR_TABLE_NAME = "major_school_table";
+const MAJOR_TABLE_PARTITION_KEY = "major";
+const MAJOR_TABLE_SORT_KEY = "school";
 
 // Review table
 const REVIEW_TABLE_NAME = "review_table";
