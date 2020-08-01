@@ -35,26 +35,30 @@ export async function getReviews(reviewIds: [string]) {
 export async function writeReview(review: ReviewInterface, reviewId: string, school: string, major: string) {
     const reviewItem: ReviewItem = {...review, ...{id: reviewId, ts: Date.now()}};
     const params = {
-        TransactItems: [{
-            Put: {
-                TableName: REVIEW_TABLE_NAME,
-                Item: reviewItem,
+        TransactItems: [
+            {
+                Put: {
+                    TableName: REVIEW_TABLE_NAME,
+                    Item: reviewItem,
+                }
             },
-            Update: {
-                TableName: MAJOR_TABLE_NAME,
-                Key: key(school, major),
-                UpdateExpression: 'SET #ri = list_append(if_not_exists(#ri, :empty_list), :val)',
-                ExpressionAttributeNames: {"#ri": REVIEWS},
-                ExpressionAttributeValues: {
-                    ":val": [reviewId],
-                    ":empty_list": [],
-                },
-            }
-        }]
+            {
+                Update: {
+                    TableName: MAJOR_TABLE_NAME,
+                    Key: key(school, major),
+                    UpdateExpression: 'SET #ri = list_append(if_not_exists(#ri, :empty_list), :val)',
+                    ExpressionAttributeNames: {"#ri": REVIEWS},
+                    ExpressionAttributeValues: {
+                        ":val": [reviewId],
+                        ":empty_list": [],
+                    },
+                }
+            }]
     }
 
     await db_client.transactWrite(params).promise();
 }
+
 
 /**
  *
