@@ -10,6 +10,14 @@ export function construct_apigateway(app: cdk.Stack, addReview: lambda.Function,
             allowOrigins: apigateway.Cors.ALL_ORIGINS,
             allowMethods: apigateway.Cors.ALL_METHODS,
             allowHeaders: ['*'],
+        },
+        deployOptions: {
+            methodOptions: {
+                '/*/*': {  // This special path applies to all resource paths and all HTTP methods
+                    throttlingRateLimit: env.api_rate_limit,
+                    throttlingBurstLimit: env.api_burst_limit
+                }
+            }
         }
     });
 
@@ -29,34 +37,5 @@ export function construct_apigateway(app: cdk.Stack, addReview: lambda.Function,
             'method.request.querystring.school': true,
             'method.request.querystring.major': true,
         }
-    });
-
-    const plan = api.addUsagePlan("usage-plan", {
-        name: 'Simple',
-        throttle: {
-            rateLimit: env.api_rate_limit,
-            burstLimit: env.api_burst_limit,
-        }
-    })
-
-    plan.addApiStage({
-        stage: api.deploymentStage,
-        throttle: [
-            {
-                method: get_method,
-                throttle: {
-                    rateLimit: env.get_rate_limit,
-                    burstLimit: env.get_burst_limit,
-                }
-            },
-            {
-                method: post_method,
-                throttle: {
-                    rateLimit: env.post_rate_limit,
-                    burstLimit: env.post_burst_limit,
-                }
-            },
-        ]
-
     });
 }
