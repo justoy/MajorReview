@@ -1,8 +1,7 @@
 import {uuid} from 'uuidv4';
-import {appendReview} from "./dao/major_table_dao";
-import {putReview} from "./dao/review_table_dao";
 import {ReviewInterface} from "./data/ReviewInterface";
 import {add_header} from "./common";
+import {writeReview} from "./dao/reviews_writer_reader";
 
 export const handler = async (event: any = {}): Promise<any> => {
     console.debug(`event is ${JSON.stringify(event)}`);
@@ -22,8 +21,6 @@ export const handler = async (event: any = {}): Promise<any> => {
 
     const reviewId = uuid();
 
-
-    await putReview(body, reviewId);
-    await appendReview(query['school'], query['major'], reviewId);
+    await writeReview(body, reviewId, query['school'], query['major']);
     return add_header({statusCode: 200, body: JSON.stringify("Success!")});
 }
