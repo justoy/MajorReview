@@ -13,6 +13,10 @@ const MAJOR_TABLE_SORT_KEY = process.env.MAJOR_TABLE_SORT_KEY || '';
 const REVIEWS = 'reviews' // a list of review IDs
 
 export async function getReviews(reviewIds: [string]) {
+    if (!reviewIds || reviewIds.length < 1) {
+        return [];
+    }
+
     const keys = reviewIds.map(id => {
         return {[REVIEW_TABLE_PRIMARY_KEY]: id}
     });

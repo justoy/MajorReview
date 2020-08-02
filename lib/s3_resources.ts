@@ -1,5 +1,5 @@
 import {get_cloudflare_policy} from "./cloudflare_policy";
-import {RedirectProtocol} from "@aws-cdk/aws-s3";
+import {BucketEncryption, RedirectProtocol} from "@aws-cdk/aws-s3";
 import cdk = require('@aws-cdk/core');
 import s3 = require('@aws-cdk/aws-s3');
 
@@ -11,6 +11,7 @@ export function construct_s3(app: cdk.Stack) {
         bucketName: subDomain,
         websiteIndexDocument: 'index.html',
         websiteErrorDocument: 'index.html',
+        encryption: BucketEncryption.S3_MANAGED,
         publicReadAccess: true,
         removalPolicy: cdk.RemovalPolicy.DESTROY, // NOT recommended for production code
     });
@@ -18,6 +19,7 @@ export function construct_s3(app: cdk.Stack) {
 
     const rootDomainBucket = new s3.Bucket(app, 'rootDomainBucket', {
         bucketName: rootDomain,
+        encryption: BucketEncryption.S3_MANAGED,
         websiteRedirect: {hostName: subDomain, protocol: RedirectProtocol.HTTPS},
         publicReadAccess: true,
         removalPolicy: cdk.RemovalPolicy.DESTROY, // NOT recommended for production code
