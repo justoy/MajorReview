@@ -1,8 +1,19 @@
-# Welcome to your CDK TypeScript project!
+# School Major review
 
-This is a blank project for TypeScript development with CDK.
+学校专业评价网 https://www.schoolmajorreview.xyz 欢迎贡献对各自专业的评价
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+也欢迎提供建议和代码
+
+本repo包含网站所有后端和infra代码，用AWS Serverless 工具写成
+
+* Database - DynamoDb
+* Server - Lambda + ApiGateway
+* Infra as Code - CDK
+* Website Conten Hosting - S3
+
+
+
+前端repo：https://github.com/justoy/MajorReview-ng
 
 ### To Deploy Beta:
 export DEPLOY_STAGE=beta && npm run build && cdk synth && cdk deploy
