@@ -13,7 +13,6 @@ const MAJOR_TABLE_SORT_KEY = process.env.MAJOR_TABLE_SORT_KEY || '';
 const REVIEWS = 'reviews' // a list of review IDs
 
 export async function getReviews(reviewIds: [string]) {
-
     const keys = reviewIds.map(id => {
         return {[REVIEW_TABLE_PRIMARY_KEY]: id}
     });
@@ -59,12 +58,34 @@ export async function writeReview(review: ReviewInterface, reviewId: string, sch
     await db_client.transactWrite(params).promise();
 }
 
-
 /**
  *
  * return {"school":"hit","major":"welding","reviews":["f52ce81f-f66f-4307-a2aa-fe3da3c09af0"]}
  */
 export async function getReviewIds(school: string, major: string) {
+    if (school.toLowerCase() === 'all') {
+        return getReviewIdsByMajor(major);
+    } else {
+        return getReviewIdsByMajorSchool(school, major);
+    }
+}
+
+async function getReviewIdsByMajor(major: string) {
+    const query_params = {
+        TableName: MAJOR_TABLE_NAME,
+        KeyConditionExpression: MAJOR_TABLE_PARTITION_KEY + " = :major",
+        ExpressionAttributeValues: {
+            ":major": major
+        }
+    }
+    const response = await db_client.query(query_params).promise();
+    const items = response['Items'];
+    const reviews = !items ? [] : items.reduce((accReviews: any, item: any) => accReviews.concat(item.reviews), []);
+
+    return {"school": "all", "major": "welding", "reviews": reviews}
+}
+
+async function getReviewIdsByMajorSchool(school: string, major: string) {
     const response = await db_client.get({
         Key: key(school, major),
         TableName: MAJOR_TABLE_NAME,

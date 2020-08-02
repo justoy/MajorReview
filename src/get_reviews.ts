@@ -2,8 +2,6 @@ import {add_header} from "./common";
 import {getReviewIds, getReviews} from "./dao/reviews_writer_reader";
 
 export const handler = async (event: any = {}): Promise<any> => {
-    console.log(`event is ${JSON.stringify(event)}`);
-
     if (!event.queryStringParameters) {
         return add_header({statusCode: 400, body: 'invalid request, you are missing the parameters'});
     }
